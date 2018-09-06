@@ -5,8 +5,14 @@ import pytest
 import app
 
 
+from resources import todos
+import models
+
 @pytest.fixture
 def client():
+    """ this client setup was adapted from flask pocoo.org
+    test cases seem to affect the database
+    """
     db_fd, app.app.config['DATABASE'] = tempfile.mkstemp()
     app.app.config['TESTING'] = True
     client = app.app.test_client()
@@ -17,15 +23,10 @@ def client():
     os.unlink(app.app.config['DATABASE'])
 
 
-def login(client, username, password):
-    return client.post('/login', data=dict(
-        username=username,
-        password=password
-    ), follow_redirects=True)
+def test_todo_or_404():
+    todo = todos.todo_or_404(1)
+    assert 'clean' in todo.name
 
-
-def logout(client):
-    return client.get('/logout', follow_redirects=True)
 
 
 def test_todo_list_get(client):
@@ -39,6 +40,10 @@ def test_todo_get(client):
     res = client.get('/api/v1/todos/1')
     assert b'clean the house' in res.data
     assert res.status_code == 200
+
+def test_todo_get_fail(client):
+    res = client.get('/api/v1/todos/100')
+    assert res.status_code == 404
 
 
 def test_todo_put(client):
