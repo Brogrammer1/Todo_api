@@ -2,10 +2,10 @@ import unittest
 
 import app
 
+
 class TestFlaskApi(unittest.TestCase):
     def setUp(self):
         self.app = app.app.test_client()
-
 
     def test_home_view(self):
         res = self.app.get('/')
@@ -38,15 +38,15 @@ class TestFlaskApi(unittest.TestCase):
 
     def test_todo_list_post(self):
         res = self.app.post('/api/v1/todos', json={'name': 'tell tell'},
-                          headers={
-                              "Authorization": "Basic dGVzdDpwYXNzd29yZA=="})
+                            headers={
+                                "Authorization": "Basic dGVzdDpwYXNzd29yZA=="})
         assert res.status_code == 201
         assert b'tell tell' in res.data
 
     def test_todo_list_post_fail(self):
         res = self.app.post('/api/v1/todos',
-                          headers={
-                              "Authorization": "Basic dGVzdDpwYXNzd29yZA=="})
+                            headers={
+                                "Authorization": "Basic dGVzdDpwYXNzd29yZA=="})
         assert res.status_code == 400
         assert b'Name of todo' in res.data
 
